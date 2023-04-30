@@ -1,0 +1,1 @@
+select ID, dept_name from advisor, instructor where i_ID=ID;

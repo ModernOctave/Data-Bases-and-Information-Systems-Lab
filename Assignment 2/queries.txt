@@ -1,0 +1,123 @@
+2.
+	SELECT *
+	FROM student, department, takes, advisor, instructor 
+	WHERE student.dept_name = department.dept_name AND student.ID = takes.ID AND student.ID = advisor.s_ID AND advisor.i_ID = instructor.ID AND student.ID = 45678;
+
+3.
+	-- Einstien wants to find which rooms are available in his department and their capacities
+	SELECT building, room_number, capacity
+	FROM instructor
+	NATURAL JOIN classroom
+	NATURAL JOIN department
+	WHERE ID = '22222';
+
+	-- Find details of the prerequisite courses for a BIO-339 ie. Computational Biology
+	SELECT *
+	FROM course
+	WHERE course_id = (
+	  SELECT prereq_id
+	  FROM course
+	  NATURAL JOIN prereq
+	  WHERE course_id = 'BIO-399'
+	);
+
+	-- Find the distibution of grades for the students of each advisor
+	SELECT name, grade, COUNT(grade)
+	FROM instructor, advisor, 	takes
+	WHERE instructor.ID = advisor.i_ID AND advisor.s_ID = takes.ID
+	GROUP BY grade, name
+	ORDER BY name, grade;
+	
+	-- Find the name and department of instructors who had a class on Monday in 2018
+	SELECT name, dept_name
+	FROM instructor
+	NATURAL JOIN teaches
+	NATURAL JOIN section
+	NATURAL JOIN time_slot
+	WHERE day = 'M' AND year = 2018;
+	
+	-- Remove BIO-101 from the prequisite of BIO-399 and see the table before and after
+	SELECT * FROM prereq;
+	DELETE FROM prereq
+	WHERE course_id = 'BIO-399' AND prereq_id = 'BIO-101';
+	SELECT * FROM prereq;
+	
+	-- Add new classroom and see the table before and after
+	SELECT * FROM classroom;
+	INSERT INTO classroom VALUES ('Seshu', 315, 150);
+	SELECT * FROM classroom;
+	
+	-- Add new department and see the table before and after
+	SELECT * FROM department;
+	INSERT INTO department VALUES ('MMAE', 'Seshu', 75000);
+	SELECT * FROM department;
+	
+	-- Add new course and see the table before and after
+	SELECT * FROM course;
+	INSERT INTO course VALUES ('ME-101', 'Engineering Drawing', 'MMAE', 3);
+	SELECT * FROM course;
+	
+	-- Add new instructor and see the table before and after
+	SELECT * FROM instructor;
+	INSERT INTO instructor VALUES ('36781', 'P Seshu', 'MMAE', 95000);
+	SELECT * FROM instructor;
+	
+	-- Add new section and see the table before and after
+	SELECT * FROM section;
+	INSERT INTO section VALUES ('ME-101', '1', 'Fall', 2020, 'Seshu', 315, 'A');
+	SELECT * FROM section;
+	
+	-- Add new teaches and see the table before and after
+	SELECT * FROM teaches;
+	INSERT INTO teaches VALUES ('36781', 'ME-101', 1, 'Fall', 2020);
+	SELECT * FROM teaches;
+	
+	-- Add new student and see the table before and after
+	SELECT * FROM student;
+	INSERT INTO student VALUES ('12121', 'Aditya', 'MMAE', 3);
+	SELECT * FROM student;
+	
+	-- Add new takes and see the table before and after
+	SELECT * FROM takes;
+	INSERT INTO takes VALUES ('12121', 'ME-101', 1, 'Fall', 2020, 'B+');
+	SELECT * FROM takes;
+	
+	-- Add new advisor and see the table before and after
+	SELECT * FROM advisor;
+	INSERT INTO advisor VALUES ('12121', '36781');
+	SELECT * FROM advisor;
+	
+	-- Add new time_slot and see the table before and after
+	SELECT * FROM time_slot;
+	INSERT INTO time_slot VALUES ('H', 'M', '9', '0', '10', '0');
+	SELECT * FROM time_slot;
+	
+	-- Add new prereq and see the table before and after
+	SELECT * FROM prereq;
+	INSERT INTO prereq VALUES ('EE-181', 'ME-101');
+	SELECT * FROM prereq;
+
+4.
+	a)
+		SELECT DISTINCT ID, name
+		FROM student
+		NATURAL JOIN takes
+		NATURAL JOIN section
+		WHERE dept_name = 'Comp. Sci.' AND building = 'Taylor';
+		
+	b)
+		SELECT ID, name
+		FROM student
+		NATURAL JOIN takes
+		WHERE grade = 'A'
+		INTERSECT
+		SELECT ID, name
+		FROM student
+		NATURAL JOIN takes
+		WHERE grade = 'C';
+		
+	c)
+		SELECT DISTINCT building, room_number
+		FROM section
+		NATURAL JOIN time_slot
+		WHERE day = 'W';
